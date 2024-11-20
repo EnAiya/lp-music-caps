@@ -74,7 +74,7 @@ python app.py
 
 # or
 cd lpmc/music_captioning
-wget https://huggingface.co/seungheondoh/lp-music-caps/resolve/main/transfer.pth -O exp/transfer/lp_music_caps
+wget https://huggingface.co/seungheondoh/lp-music-caps/resolve/main/transfer.pth -O exp/transfer/lp_music_caps/last.pth
 python captioning.py --audio_path ../../dataset/samples/orchestra.wav
 ```
 
