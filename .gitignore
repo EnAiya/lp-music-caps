@@ -5,3 +5,6 @@ notebook/
 *.egg-info
 events*
 *.pth
+*.mp3
+*.wav
+/venv

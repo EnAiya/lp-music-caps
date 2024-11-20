@@ -14,16 +14,20 @@ if os.path.isfile("transfer.pth") == False:
     torch.hub.download_url_to_file('https://huggingface.co/seungheondoh/lp-music-caps/resolve/main/electronic.mp3', 'electronic.mp3')
     torch.hub.download_url_to_file('https://huggingface.co/seungheondoh/lp-music-caps/resolve/main/orchestra.wav', 'orchestra.wav')
 
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
+device = "cuda:0" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 
 example_list = ['electronic.mp3', 'orchestra.wav']
 model = BartCaptionModel(max_length = 128)
 pretrained_object = torch.load('./transfer.pth', map_location='cpu')
 state_dict = pretrained_object['state_dict']
 model.load_state_dict(state_dict)
-if torch.cuda.is_available():
+if torch.backends.mps.is_available():
+    model = model.to('mps')
+elif torch.cuda.is_available():
     torch.cuda.set_device(device)
-model = model.cuda(device)
+    model = model.cuda(device)
+else:
+    model = model.to('cpu')
 model.eval()
 
 def get_audio(audio_path, duration=10, target_sr=16000):

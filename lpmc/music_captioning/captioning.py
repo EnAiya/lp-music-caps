@@ -54,13 +54,12 @@ def captioning(args):
     config = OmegaConf.load(os.path.join(save_dir, "hparams.yaml"))
     model = BartCaptionModel(max_length = config.max_length)
     model, save_epoch = load_pretrained(args, save_dir, model, mdp=config.multiprocessing_distributed)
-    torch.cuda.set_device(args.gpu)
-    model = model.cuda(args.gpu)
+    model = model.to("mps")
     model.eval()
     
     audio_tensor = get_audio(audio_path = args.audio_path)
     if args.gpu is not None:
-        audio_tensor = audio_tensor.cuda(args.gpu, non_blocking=True)
+        audio_tensor = audio_tensor.to("mps")
 
     with torch.no_grad():
         output = model.generate(

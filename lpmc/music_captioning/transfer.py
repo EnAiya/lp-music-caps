@@ -68,8 +68,7 @@ def main_worker(args):
     model, save_epoch = load_pretrained(args, pretrain_dir, model, model_types="last", mdp=config.multiprocessing_distributed)
     print_model_params(model)
 
-    torch.cuda.set_device(args.gpu)
-    model = model.cuda(args.gpu)
+    model = model.to("mps")
 
     optimizer = torch.optim.AdamW(model.parameters(), args.lr)
     save_dir = f"exp/transfer/{args.caption_type}"
@@ -87,8 +86,8 @@ def train(train_loader, model, optimizer, epoch, logger, args):
     for data_iter_step, batch in enumerate(train_loader):
         lr = adjust_learning_rate(optimizer, data_iter_step / iters_per_epoch + epoch, args)
         fname, gt_caption, text, audio_embs = batch
-        if args.gpu is not None:
-            audio_embs = audio_embs.cuda(args.gpu, non_blocking=True)
+
+        audio_embs = audio_embs.to("mps")
         # compute output
         loss = model(audio=audio_embs, text=text)
         train_losses.step(loss.item(), audio_embs.size(0))
